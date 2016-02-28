@@ -15,7 +15,7 @@ import serverStuff.Command;
 
 
 public class RentManager {
-	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
+	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
 		
 		Person jani = new Person("Sajt","János",Gender.MALE,1000);
 //		Person geri = new Person("Sajt","Gergö",Gender.MALE,1100);
@@ -81,35 +81,8 @@ public class RentManager {
 //		sumPriceDemo.add((Buyable) game1);
 //		
 //		System.out.println(sumPrice(sumPriceDemo));
-		System.out.println("1.GET, 2.PUT, 3.EXIT");
-		Scanner in = new Scanner(System.in);
-		String input = in.nextLine();
-		Socket clientS = new Socket("127.0.0.1",12);
-		System.out.println("Connected.");
-		ObjectOutputStream clientOut = new ObjectOutputStream(clientS.getOutputStream());
-		ObjectInputStream clientIn = new ObjectInputStream(clientS.getInputStream());
-		switch (input) {
-			case "1":
-				System.out.println("Sending GET command.");
-				clientOut.writeObject(Command.GET);
-				clientOut.flush();
-				Object loaded = clientIn.readObject();
-				System.out.println(loaded.toString());
-				break;
-			case "2":
-				System.out.println("Sending PUT command.");
-				clientOut.writeObject(Command.PUT);
-				clientOut.writeObject(jani);
-				clientOut.flush();
-				break;
-			case "3":
-				System.out.println("Sending EXIT command.");
-				clientOut.writeObject(Command.EXIT);
-				clientOut.flush();
-				break;
-		}
-		clientOut.close();
-		clientIn.close();
+		
+		clientServer(jani);
 //	
 //	}
 //	
@@ -121,5 +94,43 @@ public class RentManager {
 //		return total;
 //	}
 //	
+	}
+
+	private static void clientServer(Person jani)
+			throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
+		Socket clientS = new Socket("127.0.0.1",80);
+		System.out.println("Connected.");
+		ObjectOutputStream clientOut = new ObjectOutputStream(clientS.getOutputStream());
+		ObjectInputStream clientIn = new ObjectInputStream(clientS.getInputStream());
+		boolean running = true;
+		while (running) {
+			System.out.println("1.GET, 2.PUT, 3.EXIT");
+			Scanner in = new Scanner(System.in);
+			String input = in.nextLine();
+			switch (input) {
+				case "1":
+					System.out.println("Sending GET command.");
+					clientOut.writeObject(Command.GET);
+					clientOut.flush();
+					Object loaded = clientIn.readObject();
+					System.out.println(loaded.toString());
+					break;
+				case "2":
+					System.out.println("Sending PUT command.");
+					clientOut.writeObject(Command.PUT);
+					Thread.sleep(1000);
+					clientOut.writeObject(jani);
+					clientOut.flush();
+					break;
+				case "3":
+					System.out.println("Sending EXIT command.");
+					clientOut.writeObject(Command.EXIT);
+					clientOut.flush();
+					running = false;
+			}
+		}
+			
+		clientOut.close();
+		clientIn.close();
 	}
 }

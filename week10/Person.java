@@ -54,5 +54,9 @@ public class Person implements java.io.Serializable{
 		this.salary = salary;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "First Name: " + getFirstName() + " Last Name: " + getLastName() + "\n"
+				+ "Gender: " + getGender() + " Salary: " + getSalary();
+	}
 }

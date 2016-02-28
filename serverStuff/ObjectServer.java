@@ -53,43 +53,54 @@ public class ObjectServer {
 	}
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		ServerSocket serverS = null;
+		try {
+			serverS = new ServerSocket(80);
+			System.out.println("Connected.");
+		} catch (IOException e) {
+			System.err.println("Could not listen on port: 80.");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		Socket clientS = null;
+		try {
+			clientS = serverS.accept();
+			System.out.println("Accepted.");
+		} catch (IOException e) {
+			System.err.println("Accept failed.");
+			e.printStackTrace();
+		}
+		
+		System.out.println("Request Accepted.");
+		ObjectInputStream inputStream = new ObjectInputStream(clientS.getInputStream());
+		ObjectOutputStream outputStream = new ObjectOutputStream(clientS.getOutputStream());
+		
 		boolean ServerRunning = true;
 		while (ServerRunning) {
-				
-				ServerSocket serverS = null;
-				try {
-					serverS = new ServerSocket(12);
-					System.out.println("Connected.");
-				} catch (IOException e) {
-					System.err.println("Could not listen on port: 12.");
-					e.printStackTrace();
-					System.exit(1);
-				}
-				
-				Socket clientS = null;
-				try {
-					clientS = serverS.accept();
-					System.out.println("Accepted.");
-				} catch (IOException e) {
-					System.err.println("Accept failed.");
-					e.printStackTrace();
-				}
-				
-				System.out.println("Request Accepted.");
-				ObjectInputStream inputStream = new ObjectInputStream(clientS.getInputStream());
-				ObjectOutputStream outputStream = new ObjectOutputStream(clientS.getOutputStream());
-				Object objectFromInput = inputStream.readObject();
+			Object objectFromInput = null;
+			try {
+				objectFromInput = inputStream.readObject();
+			} catch (java.net.SocketException e) {
+				System.out.println(e.toString());
+				System.out.println("Client ShutDown.");
+				break;
+			}
+			
 				if (objectFromInput instanceof Command) {
 					if (objectFromInput == Command.GET) {
 						mode = ServerMode.LOAD;
 						outputStream.writeObject(load());
 						outputStream.flush();
+						continue;
 						
 					}
 					else if (objectFromInput == Command.PUT) {
 						mode = ServerMode.SAVE;
-						save(objectFromInput);
+						Object dataToSave = inputStream.readObject();
+						save(dataToSave);
 						System.out.println("Object saved.");
+						continue;
 					}
 					else if (objectFromInput == Command.EXIT) {
 						System.out.println("Server Shutdown.");
@@ -98,9 +109,9 @@ public class ObjectServer {
 						ServerRunning = false;
 					}
 				}
-				inputStream.close();
-				outputStream.close();
 		}
+		inputStream.close();
+		outputStream.close();
 	}
 
 }
