@@ -1,6 +1,8 @@
 package week10;
 
-public abstract class Product {
+import java.io.Serializable;
+
+public abstract class Product implements Serializable{
 	String id;
 	String title;
 	Person person;

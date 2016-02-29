@@ -56,7 +56,7 @@ public class Person implements java.io.Serializable{
 	
 	@Override
 	public String toString() {
-		return "First Name: " + getFirstName() + " Last Name: " + getLastName() + "\n"
-				+ "Gender: " + getGender() + " Salary: " + getSalary();
+		return "\n<PERSON>\n" + " First Name: " + getFirstName() + "\n" + " Last Name: " + getLastName() + "\n"
+				+ " Gender: " + getGender() + "\n" + " Salary: " + getSalary() + "\n<PERSON/>\n";
 	}
 }

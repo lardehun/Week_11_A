@@ -2,7 +2,6 @@ package serverStuff;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -56,7 +55,7 @@ public class ObjectServer {
 		ServerSocket serverS = null;
 		try {
 			serverS = new ServerSocket(80);
-			System.out.println("Connected.");
+			System.out.println("Connected. \n");
 		} catch (IOException e) {
 			System.err.println("Could not listen on port: 80.");
 			e.printStackTrace();

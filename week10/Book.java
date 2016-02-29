@@ -1,6 +1,6 @@
 package week10;
 
-public class Book extends Product implements java.io.Serializable{
+public class Book extends Product{
 	Person author;
 	
 	
@@ -26,4 +26,8 @@ public class Book extends Product implements java.io.Serializable{
 		return investment;
 	}
 	
+	@Override
+	public String toString() {
+		return "Title: " + this.title + "\n" + "Author: " + this.author;
+	}
 }

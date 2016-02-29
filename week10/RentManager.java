@@ -1,14 +1,10 @@
 package week10;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import serverStuff.Command;
@@ -17,7 +13,7 @@ import serverStuff.Command;
 public class RentManager {
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
 		
-		Person jani = new Person("Sajt","János",Gender.MALE,1000);
+//		Person jani = new Person("Sajt","János",Gender.MALE,1000);
 //		Person geri = new Person("Sajt","Gergö",Gender.MALE,1100);
 //		Person barbi = new Person("Sajt","Barbara",Gender.FEMALE,900);
 //		
@@ -63,10 +59,10 @@ public class RentManager {
 //		
 //		
 //		
-//		Person bookPerson1 = new Person("Haragosi","Attila",Gender.MALE,10000);
-//		Person bookPerson2 = new Person("Haragosi","Péter",Gender.MALE,30100);
+		Person bookPerson1 = new Person("Haragosi","Attila",Gender.MALE,10000);
+		Person bookPerson2 = new Person("Haragosi","Péter",Gender.MALE,30100);
 //		
-//		Product book1 = new Book("HarryPottera",bookPerson1,bookPerson2);
+		Product book1 = new Book("HarryPottera",bookPerson1,bookPerson2);
 //		Product book2 = new Book("HarryPottera2",bookPerson2,bookPerson2);
 //		
 //		System.out.println(book1.getInvestment());
@@ -82,7 +78,7 @@ public class RentManager {
 //		
 //		System.out.println(sumPrice(sumPriceDemo));
 		
-		clientServer(jani);
+		clientServer(book1);
 //	
 //	}
 //	
@@ -96,7 +92,8 @@ public class RentManager {
 //	
 	}
 
-	private static void clientServer(Person jani)
+	@SuppressWarnings("resource")
+	private static void clientServer(Object objectToSave)
 			throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
 		Socket clientS = new Socket("127.0.0.1",80);
 		System.out.println("Connected.");
@@ -104,26 +101,29 @@ public class RentManager {
 		ObjectInputStream clientIn = new ObjectInputStream(clientS.getInputStream());
 		boolean running = true;
 		while (running) {
-			System.out.println("1.GET, 2.PUT, 3.EXIT");
+			System.out.println("1.GET, 2.PUT, 3.EXIT \n");
 			Scanner in = new Scanner(System.in);
 			String input = in.nextLine();
 			switch (input) {
+			
 				case "1":
-					System.out.println("Sending GET command.");
+					System.out.println("Sending GET command.\n");
 					clientOut.writeObject(Command.GET);
 					clientOut.flush();
 					Object loaded = clientIn.readObject();
 					System.out.println(loaded.toString());
 					break;
+					
 				case "2":
-					System.out.println("Sending PUT command.");
+					System.out.println("Sending PUT command.\n");
 					clientOut.writeObject(Command.PUT);
 					Thread.sleep(1000);
-					clientOut.writeObject(jani);
+					clientOut.writeObject(objectToSave);
 					clientOut.flush();
 					break;
+					
 				case "3":
-					System.out.println("Sending EXIT command.");
+					System.out.println("Sending EXIT command.\n");
 					clientOut.writeObject(Command.EXIT);
 					clientOut.flush();
 					running = false;
@@ -132,5 +132,6 @@ public class RentManager {
 			
 		clientOut.close();
 		clientIn.close();
+		clientS.close();
 	}
 }
