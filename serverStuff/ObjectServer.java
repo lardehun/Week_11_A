@@ -17,10 +17,6 @@ public class ObjectServer {
 		FileInputStream fileIn = null;
 		Object e = null;
 		try {
-			File f = new File("c:\\test\\test.ser");
-			if(!f.exists()) { 
-				f.createNewFile();
-			}
 			fileIn = new FileInputStream("c:\\test\\test.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 	        e = (Object) in.readObject();
@@ -54,10 +50,10 @@ public class ObjectServer {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket serverS = null;
 		try {
-			serverS = new ServerSocket(80);
+			serverS = new ServerSocket(6666);
 			System.out.println("Connected. \n");
 		} catch (IOException e) {
-			System.err.println("Could not listen on port: 80.");
+			System.err.println("Could not listen on port: 6666.");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -75,13 +71,13 @@ public class ObjectServer {
 		ObjectInputStream inputStream = new ObjectInputStream(clientS.getInputStream());
 		ObjectOutputStream outputStream = new ObjectOutputStream(clientS.getOutputStream());
 		
-		boolean ServerRunning = true;
-		while (ServerRunning) {
+		boolean serverRunning = true;
+		while (serverRunning) {
 			Object objectFromInput = null;
 			try {
 				objectFromInput = inputStream.readObject();
 			} catch (java.net.SocketException e) {
-				System.out.println(e.toString());
+				e.printStackTrace();
 				System.out.println("Client ShutDown.");
 				break;
 			}
@@ -105,7 +101,7 @@ public class ObjectServer {
 						System.out.println("Server Shutdown.");
 						clientS.close();
 						serverS.close();
-						ServerRunning = false;
+						serverRunning = false;
 					}
 				}
 		}

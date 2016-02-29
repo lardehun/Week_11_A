@@ -94,11 +94,25 @@ public class RentManager {
 
 	@SuppressWarnings("resource")
 	private static void clientServer(Object objectToSave)
-			throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
-		Socket clientS = new Socket("127.0.0.1",80);
+			throws ClassNotFoundException, InterruptedException, IOException {
+		Socket clientS = null;
+		try {
+			clientS = new Socket("127.0.0.1",6666);
+		} catch (UnknownHostException e) {
+			System.out.println("Server not running.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println("Connected.");
-		ObjectOutputStream clientOut = new ObjectOutputStream(clientS.getOutputStream());
-		ObjectInputStream clientIn = new ObjectInputStream(clientS.getInputStream());
+		ObjectOutputStream clientOut = null;
+		ObjectInputStream clientIn = null;
+		try {
+			clientOut = new ObjectOutputStream(clientS.getOutputStream());
+			clientIn = new ObjectInputStream(clientS.getInputStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		boolean running = true;
 		while (running) {
 			System.out.println("1.GET, 2.PUT, 3.EXIT \n");
@@ -117,7 +131,6 @@ public class RentManager {
 				case "2":
 					System.out.println("Sending PUT command.\n");
 					clientOut.writeObject(Command.PUT);
-					Thread.sleep(1000);
 					clientOut.writeObject(objectToSave);
 					clientOut.flush();
 					break;
